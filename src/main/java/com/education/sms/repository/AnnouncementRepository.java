@@ -1,0 +1,19 @@
+package com.education.sms.repository;
+
+import com.education.sms.entity.Announcement;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface AnnouncementRepository extends JpaRepository<Announcement, Long> {
+
+    List<Announcement> findByTargetClassIdOrderByCreatedAtDesc(Long classId);
+
+    List<Announcement> findByPostByUserIdOrderByCreatedAtDesc(Long userId);
+
+    List<Announcement> findAllByOrderByCreatedAtDesc();
+
+    List<Announcement> findByTargetClassIsNullOrderByCreatedAtDesc(); // General announcements (for all)
+}
