@@ -1,21 +1,21 @@
 package com.education.sms.service;
 
 import com.education.sms.dto.AdminRequestRequest;
-import com.education.sms.entity.AdminRequest;
+import com.education.sms.dto.AdminRequestResponse;
 
 import java.util.List;
 
 public interface AdminRequestService {
 
-    AdminRequest createAdminRequest(AdminRequestRequest request);
+    AdminRequestResponse createAdminRequest(AdminRequestRequest request);
 
-    AdminRequest updateStatus(Long requestId, String status, String adminComments);
+    AdminRequestResponse updateStatus(Long requestId, String status, String adminComments);
 
-    List<AdminRequest> getAllRequests();
+    List<AdminRequestResponse> getAllRequests();
 
-    List<AdminRequest> getRequestsByUser(Long userId);
+    List<AdminRequestResponse> getRequestsByUser(Long userId);
 
-    List<AdminRequest> getRequestsByStatus(String status);
+    List<AdminRequestResponse> getRequestsByStatus(String status);
 
-    AdminRequest getRequestById(Long requestId);
+    AdminRequestResponse getRequestById(Long requestId);
 }

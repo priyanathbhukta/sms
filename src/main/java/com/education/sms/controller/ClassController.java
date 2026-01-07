@@ -1,7 +1,7 @@
 package com.education.sms.controller;
 
 import com.education.sms.dto.ClassRequest;
-import com.education.sms.entity.ClassEntity;
+import com.education.sms.dto.ClassResponse;
 import com.education.sms.service.ClassService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,37 +19,41 @@ public class ClassController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ClassEntity> createClass(@RequestBody ClassRequest request) {
+    public ResponseEntity<?> createClass(@RequestBody ClassRequest request) {
         // Input Validation
         if (request.gradeLevel() == null || request.gradeLevel().isEmpty()) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body("Grade level is required");
         }
         if (request.section() == null || request.section().isEmpty()) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body("Section is required");
         }
         if (request.academicYear() == null || request.academicYear() <= 0) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body("Academic year must be valid");
         }
 
         try {
             return ResponseEntity.ok(classService.createClass(request));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     // 2. Get All Classes (Admin and Faculty)
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY')")
-    public ResponseEntity<List<ClassEntity>> getAllClasses() {
+    public ResponseEntity<List<ClassResponse>> getAllClasses() {
         return ResponseEntity.ok(classService.getAllClasses());
     }
 
     // 3. Get Class by ID
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY')")
-    public ResponseEntity<ClassEntity> getClassById(@PathVariable Long id) {
-        return ResponseEntity.ok(classService.getClassById(id));
+    public ResponseEntity<?> getClassById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(classService.getClassById(id));
+        } catch (com.education.sms.exception.ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // 4. Assign Student to Class (Admin Only)
@@ -58,7 +62,11 @@ public class ClassController {
     public ResponseEntity<String> assignStudentToClass(
             @PathVariable Long classId,
             @PathVariable Long studentId) {
-        classService.assignStudentToClass(studentId, classId);
-        return ResponseEntity.ok("Student assigned to class successfully.");
+        try {
+            classService.assignStudentToClass(studentId, classId);
+            return ResponseEntity.ok("Student assigned to class successfully.");
+        } catch (com.education.sms.exception.ResourceNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

@@ -1,22 +1,22 @@
 package com.education.sms.service;
 
 import com.education.sms.dto.LibraryIssueRequest;
-import com.education.sms.entity.LibraryIssue;
+import com.education.sms.dto.LibraryIssueResponse;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public interface LibraryIssueService {
 
-    LibraryIssue issueBook(LibraryIssueRequest request);
+    LibraryIssueResponse issueBook(LibraryIssueRequest request);
 
-    LibraryIssue returnBook(Long issueId, BigDecimal fineAmount);
+    LibraryIssueResponse returnBook(Long issueId, BigDecimal fineAmount);
 
-    List<LibraryIssue> getIssuesByUser(Long userId);
+    List<LibraryIssueResponse> getIssuesByUser(Long userId);
 
-    List<LibraryIssue> getIssuesByBook(Long bookId);
+    List<LibraryIssueResponse> getIssuesByBook(Long bookId);
 
-    List<LibraryIssue> getOverdueIssues();
+    List<LibraryIssueResponse> getOverdueIssues();
 
-    LibraryIssue getIssueById(Long issueId);
+    LibraryIssueResponse getIssueById(Long issueId);
 }

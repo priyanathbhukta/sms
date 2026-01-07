@@ -1,73 +1,72 @@
 package com.education.sms.service.impl;
+
 import com.education.sms.dto.SubjectRequest;
 import com.education.sms.dto.SubjectResponse;
 import com.education.sms.entity.ClassEntity;
-import com.education.sms.repository.*;
 import com.education.sms.entity.Faculty;
 import com.education.sms.entity.Subject;
 import com.education.sms.exception.ResourceNotFoundException;
+import com.education.sms.repository.ClassEntityRepository;
+import com.education.sms.repository.FacultyRepository;
+import com.education.sms.repository.SubjectRepository;
 import com.education.sms.service.SubjectService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class SubjectServiceImpl implements SubjectService {
-    private final SubjectRepository subjectRepository;
-    private final ClassEntityRepository classEntityRepository;
-    private final FacultyRepository facultyRepository;
 
-    @Override
-    @Transactional
-    public Subject createSubject(SubjectRequest request) {
-        // 1. Fetch Class
-        ClassEntity classEntity = classEntityRepository.findById(request.classId())
-                .orElseThrow(() -> new ResourceNotFoundException("Class not found"));
+        private final SubjectRepository subjectRepository;
+        private final ClassEntityRepository classEntityRepository;
+        private final FacultyRepository facultyRepository;
 
-        // 2. Fetch Faculty
-        Faculty faculty = facultyRepository.findById(request.facultyId())
-                .orElseThrow(() -> new ResourceNotFoundException("Faculty not found"));
+        @Override
+        @Transactional
+        public SubjectResponse createSubject(SubjectRequest request) {
+                // 1. Fetch Class
+                ClassEntity classEntity = classEntityRepository.findById(request.classId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Class not found"));
 
-        // 3. Build Subject
-        Subject subject = Subject.builder()
-                .name(request.name())
-                .code(request.code())
-                .classEntity(classEntity)
-                .faculty(faculty)
-                .build();
+                // 2. Fetch Faculty
+                Faculty faculty = facultyRepository.findById(request.facultyId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Faculty not found"));
 
-        return subjectRepository.save(subject);
-    }
+                // 3. Build Subject
+                Subject subject = Subject.builder()
+                                .name(request.name())
+                                .code(request.code())
+                                .classEntity(classEntity)
+                                .faculty(faculty)
+                                .build();
 
-    @Override
-    public List<SubjectResponse> getAllSubjects() {
+                return toResponse(subjectRepository.save(subject));
+        }
 
-        return subjectRepository.findAll()
-                .stream()
-                .map(subject -> new SubjectResponse(
-                        subject.getId(),
-                        subject.getName(),
-                        subject.getCode(),
-                        subject.getClassEntity().getId(),
-                        subject.getFaculty().getId()
-                ))
-                .toList();
-    }
+        @Override
+        public List<SubjectResponse> getAllSubjects() {
+                return subjectRepository.findAll().stream()
+                                .map(this::toResponse)
+                                .collect(Collectors.toList());
+        }
 
-    @Override
-    public SubjectResponse getSubjectById(Long id) {
-        Subject subject = subjectRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
+        @Override
+        public SubjectResponse getSubjectById(Long id) {
+                Subject subject = subjectRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
+                return toResponse(subject);
+        }
 
-        return new SubjectResponse(
-                subject.getId(),
-                subject.getName(),
-                subject.getCode(),
-                subject.getClassEntity().getId(),
-                subject.getFaculty().getId()
-        );
-    }
+        private SubjectResponse toResponse(Subject entity) {
+                return new SubjectResponse(
+                                entity.getId(),
+                                entity.getName(),
+                                entity.getCode(),
+                                entity.getClassEntity().getId(),
+                                entity.getFaculty().getId());
+        }
 }

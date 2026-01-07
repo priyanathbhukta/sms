@@ -1,20 +1,19 @@
 package com.education.sms.service;
 
 import com.education.sms.dto.EventRequest;
-import com.education.sms.entity.Event;
+import com.education.sms.dto.EventResponse;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public interface EventService {
 
-    Event createEvent(EventRequest request);
+    EventResponse createEvent(EventRequest request);
 
-    List<Event> getAllEvents();
+    List<EventResponse> getAllEvents();
 
-    List<Event> getUpcomingEvents();
+    List<EventResponse> getUpcomingEvents();
 
-    Event getEventById(Long eventId);
+    EventResponse getEventById(Long eventId);
 
     void deleteEvent(Long eventId);
 }

@@ -1,6 +1,7 @@
 package com.education.sms.service.impl;
 
 import com.education.sms.dto.AdminRequestRequest;
+import com.education.sms.dto.AdminRequestResponse;
 import com.education.sms.entity.AdminRequest;
 import com.education.sms.entity.User;
 import com.education.sms.exception.ResourceNotFoundException;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +24,7 @@ public class AdminRequestServiceImpl implements AdminRequestService {
 
     @Override
     @Transactional
-    public AdminRequest createAdminRequest(AdminRequestRequest request) {
+    public AdminRequestResponse createAdminRequest(AdminRequestRequest request) {
         User requester = userRepository.findById(request.requesterUserId())
                 .orElseThrow(
                         () -> new ResourceNotFoundException("User not found with id: " + request.requesterUserId()));
@@ -36,38 +38,62 @@ public class AdminRequestServiceImpl implements AdminRequestService {
                 .requestDocumentUrl(request.requestDocumentUrl())
                 .build();
 
-        return adminRequestRepository.save(adminRequest);
+        return toResponse(adminRequestRepository.save(adminRequest));
     }
 
     @Override
     @Transactional
-    public AdminRequest updateStatus(Long requestId, String status, String adminComments) {
-        AdminRequest request = getRequestById(requestId);
+    public AdminRequestResponse updateStatus(Long requestId, String status, String adminComments) {
+        AdminRequest request = adminRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Admin request not found with id: " + requestId));
         request.setStatus(status);
         if (adminComments != null) {
             request.setAdminComments(adminComments);
         }
-        return adminRequestRepository.save(request);
+        return toResponse(adminRequestRepository.save(request));
     }
 
     @Override
-    public List<AdminRequest> getAllRequests() {
-        return adminRequestRepository.findAll();
+    public List<AdminRequestResponse> getAllRequests() {
+        return adminRequestRepository.findAll().stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<AdminRequest> getRequestsByUser(Long userId) {
-        return adminRequestRepository.findByRequesterUserId(userId);
+    public List<AdminRequestResponse> getRequestsByUser(Long userId) {
+        return adminRequestRepository.findByRequesterUserId(userId).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<AdminRequest> getRequestsByStatus(String status) {
-        return adminRequestRepository.findByStatusOrderByCreatedAtDesc(status);
+    public List<AdminRequestResponse> getRequestsByStatus(String status) {
+        return adminRequestRepository.findByStatusOrderByCreatedAtDesc(status).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public AdminRequest getRequestById(Long requestId) {
-        return adminRequestRepository.findById(requestId)
+    public AdminRequestResponse getRequestById(Long requestId) {
+        AdminRequest request = adminRequestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Admin request not found with id: " + requestId));
+        return toResponse(request);
+    }
+
+    private AdminRequestResponse toResponse(AdminRequest entity) {
+        return new AdminRequestResponse(
+                entity.getRequestId(),
+                entity.getRequesterUser().getId(),
+                entity.getRequesterUser().getEmail(),
+                entity.getRequestType(),
+                entity.getDescription(),
+                entity.getPreviousDate(),
+                entity.getNewDate(),
+                entity.getRequestDocumentUrl(),
+                entity.getStatus(),
+                entity.getAdminComments(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt());
     }
 }

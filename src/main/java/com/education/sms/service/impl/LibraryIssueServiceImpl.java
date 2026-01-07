@@ -1,6 +1,7 @@
 package com.education.sms.service.impl;
 
 import com.education.sms.dto.LibraryIssueRequest;
+import com.education.sms.dto.LibraryIssueResponse;
 import com.education.sms.entity.Book;
 import com.education.sms.entity.LibraryIssue;
 import com.education.sms.entity.User;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +29,18 @@ public class LibraryIssueServiceImpl implements LibraryIssueService {
 
     @Override
     @Transactional
-    public LibraryIssue issueBook(LibraryIssueRequest request) {
+    public LibraryIssueResponse issueBook(LibraryIssueRequest request) {
         Book book = bookRepository.findById(request.bookId())
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + request.bookId()));
 
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + request.userId()));
+
+        // Validate Role: Only Students and Faculties can borrow books
+        if (user.getRole() != com.education.sms.entity.UserRole.STUDENT &&
+                user.getRole() != com.education.sms.entity.UserRole.FACULTY) {
+            throw new IllegalStateException("Books can only be issued to Students or Faculty members");
+        }
 
         // Check availability
         if (book.getAvailableCopies() <= 0) {
@@ -46,15 +54,19 @@ public class LibraryIssueServiceImpl implements LibraryIssueService {
         LibraryIssue issue = LibraryIssue.builder()
                 .book(book)
                 .user(user)
+                .issueDate(LocalDate.now())
+                .dueDate(LocalDate.now().plusDays(15)) // Default 15 days due date
+                .status("issued")
                 .build();
 
-        return libraryIssueRepository.save(issue);
+        return toResponse(libraryIssueRepository.save(issue));
     }
 
     @Override
     @Transactional
-    public LibraryIssue returnBook(Long issueId, BigDecimal fineAmount) {
-        LibraryIssue issue = getIssueById(issueId);
+    public LibraryIssueResponse returnBook(Long issueId, BigDecimal fineAmount) {
+        LibraryIssue issue = libraryIssueRepository.findById(issueId)
+                .orElseThrow(() -> new ResourceNotFoundException("Library issue not found with id: " + issueId));
 
         if ("returned".equals(issue.getStatus())) {
             throw new IllegalStateException("Book already returned");
@@ -72,27 +84,48 @@ public class LibraryIssueServiceImpl implements LibraryIssueService {
         book.setAvailableCopies(book.getAvailableCopies() + 1);
         bookRepository.save(book);
 
-        return libraryIssueRepository.save(issue);
+        return toResponse(libraryIssueRepository.save(issue));
     }
 
     @Override
-    public List<LibraryIssue> getIssuesByUser(Long userId) {
-        return libraryIssueRepository.findByUserId(userId);
+    public List<LibraryIssueResponse> getIssuesByUser(Long userId) {
+        return libraryIssueRepository.findByUserId(userId).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<LibraryIssue> getIssuesByBook(Long bookId) {
-        return libraryIssueRepository.findByBookBookId(bookId);
+    public List<LibraryIssueResponse> getIssuesByBook(Long bookId) {
+        return libraryIssueRepository.findByBookBookId(bookId).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<LibraryIssue> getOverdueIssues() {
-        return libraryIssueRepository.findByStatus("overdue");
+    public List<LibraryIssueResponse> getOverdueIssues() {
+        // Use the custom query to find issues past due date and not returned
+        return libraryIssueRepository.findOverdueIssues().stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public LibraryIssue getIssueById(Long issueId) {
-        return libraryIssueRepository.findById(issueId)
+    public LibraryIssueResponse getIssueById(Long issueId) {
+        LibraryIssue issue = libraryIssueRepository.findById(issueId)
                 .orElseThrow(() -> new ResourceNotFoundException("Library issue not found with id: " + issueId));
+        return toResponse(issue);
+    }
+
+    private LibraryIssueResponse toResponse(LibraryIssue entity) {
+        return new LibraryIssueResponse(
+                entity.getIssueId(),
+                entity.getBook().getBookId(),
+                entity.getBook().getTitle(),
+                entity.getUser().getId(),
+                entity.getUser().getEmail(),
+                entity.getIssueDate(),
+                entity.getReturnDate(),
+                entity.getFineAmount(),
+                entity.getStatus());
     }
 }

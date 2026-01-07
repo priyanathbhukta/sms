@@ -1,7 +1,7 @@
 package com.education.sms.controller;
 
 import com.education.sms.dto.EventRequest;
-import com.education.sms.entity.Event;
+import com.education.sms.dto.EventResponse;
 import com.education.sms.service.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +19,7 @@ public class EventController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY')")
+    @io.swagger.v3.oas.annotations.Operation(hidden = true)
     public ResponseEntity<?> createEvent(@RequestBody EventRequest request) {
         if (request.title() == null || request.eventDate() == null) {
             return ResponseEntity.badRequest().body("Missing required fields");
@@ -29,18 +30,19 @@ public class EventController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY', 'STUDENT')")
-    public ResponseEntity<List<Event>> getAllEvents() {
+    public ResponseEntity<List<EventResponse>> getAllEvents() {
         return ResponseEntity.ok(eventService.getAllEvents());
     }
 
     @GetMapping("/upcoming")
     @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY', 'STUDENT')")
-    public ResponseEntity<List<Event>> getUpcomingEvents() {
+    public ResponseEntity<List<EventResponse>> getUpcomingEvents() {
         return ResponseEntity.ok(eventService.getUpcomingEvents());
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY', 'STUDENT')")
+    @io.swagger.v3.oas.annotations.Operation(hidden = true)
     public ResponseEntity<?> getEventById(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(eventService.getEventById(id));
@@ -50,7 +52,7 @@ public class EventController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY')")
     public ResponseEntity<String> deleteEvent(@PathVariable Long id) {
         try {
             eventService.deleteEvent(id);

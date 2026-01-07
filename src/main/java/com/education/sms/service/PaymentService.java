@@ -1,21 +1,21 @@
 package com.education.sms.service;
 
 import com.education.sms.dto.PaymentRequest;
-import com.education.sms.entity.Payment;
+import com.education.sms.dto.PaymentResponse;
 
 import java.util.List;
 
 public interface PaymentService {
 
-    Payment createPayment(PaymentRequest request);
+    PaymentResponse createPayment(PaymentRequest request);
 
-    Payment updatePaymentStatus(Long paymentId, String status);
+    PaymentResponse updatePaymentStatus(Long paymentId, String status);
 
-    List<Payment> getPaymentsByStudent(Long studentId);
+    List<PaymentResponse> getPaymentsByStudent(Long studentId);
 
-    List<Payment> getPaymentsByStatus(String status);
+    List<PaymentResponse> getPaymentsByStatus(String status);
 
-    Payment getPaymentById(Long paymentId);
+    PaymentResponse getPaymentById(Long paymentId);
 
-    Payment getPaymentByRazorpayId(String razorpayPaymentId);
+    PaymentResponse getPaymentByRazorpayId(String razorpayPaymentId);
 }

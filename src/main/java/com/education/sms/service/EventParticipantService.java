@@ -1,17 +1,17 @@
 package com.education.sms.service;
 
 import com.education.sms.dto.EventParticipantRequest;
-import com.education.sms.entity.EventParticipant;
+import com.education.sms.dto.EventParticipantResponse;
 
 import java.util.List;
 
 public interface EventParticipantService {
 
-    EventParticipant registerParticipant(EventParticipantRequest request);
+    EventParticipantResponse registerParticipant(EventParticipantRequest request);
 
-    List<EventParticipant> getParticipantsByEvent(Long eventId);
+    List<EventParticipantResponse> getParticipantsByEvent(Long eventId);
 
-    List<EventParticipant> getEventsByUser(Long userId);
+    List<EventParticipantResponse> getEventsByUser(Long userId);
 
     void removeParticipant(Long participantId);
 }

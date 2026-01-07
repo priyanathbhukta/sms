@@ -24,6 +24,6 @@ public class ClassEntity {
 
     private String address;
 
-    @Column(name = "academic_year", nullable = false)
+    @Column(name = "academic_year")
     private Integer academicYear;
 }

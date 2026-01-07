@@ -1,19 +1,19 @@
 package com.education.sms.service;
 
 import com.education.sms.dto.FeesStructureRequest;
-import com.education.sms.entity.FeesStructure;
+import com.education.sms.dto.FeesStructureResponse;
 
 import java.util.List;
 
 public interface FeesStructureService {
 
-    FeesStructure createFeesStructure(FeesStructureRequest request);
+    FeesStructureResponse createFeesStructure(FeesStructureRequest request);
 
-    List<FeesStructure> getAllFeesStructures();
+    List<FeesStructureResponse> getAllFeesStructures();
 
-    List<FeesStructure> getFeesStructuresByClass(Long classId);
+    List<FeesStructureResponse> getFeesStructuresByClass(Long classId);
 
-    FeesStructure getFeesStructureById(Long feeId);
+    FeesStructureResponse getFeesStructureById(Long feeId);
 
     void deleteFeesStructure(Long feeId);
 }

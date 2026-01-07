@@ -27,7 +27,7 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     @Transactional
-    public Result createOrUpdateResult(ResultRequest request) {
+    public ResultResponse createOrUpdateResult(ResultRequest request) {
         Exam exam = examRepository.findById(request.examId())
                 .orElseThrow(() -> new ResourceNotFoundException("Exam not found with id: " + request.examId()));
 
@@ -53,7 +53,7 @@ public class ResultServiceImpl implements ResultService {
                     .build();
         }
 
-        return resultRepository.save(result);
+        return mapToResponse(resultRepository.save(result));
     }
 
     @Override

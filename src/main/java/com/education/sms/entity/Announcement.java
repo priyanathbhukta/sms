@@ -3,6 +3,7 @@ package com.education.sms.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import com.education.sms.entity.UserRole;
 import java.time.LocalDateTime;
 
 @Entity
@@ -34,6 +35,10 @@ public class Announcement {
     @JoinColumn(name = "target_class_id")
     @ToString.Exclude
     private ClassEntity targetClass;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "target_role")
+    private UserRole targetRole;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

@@ -4,9 +4,12 @@ import com.education.sms.entity.Subject;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-
 @Repository
-public interface SubjectRepository extends JpaRepository<Subject,Long> {
+public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
     boolean existsByCode(String code);
+
+    java.util.List<Subject> findByFacultyId(Long facultyId);
+
+    java.util.List<Subject> findByClassEntityId(Long classId);
 }

@@ -24,10 +24,10 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil jwtUtil;
 
     public AuthServiceImpl(UserRepository userRepository,
-                           StudentRepository studentRepository,
-                           FacultyRepository facultyRepository,
-                           PasswordEncoder passwordEncoder,
-                           JwtUtil jwtUtil) {
+            StudentRepository studentRepository,
+            FacultyRepository facultyRepository,
+            PasswordEncoder passwordEncoder,
+            JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.studentRepository = studentRepository;
         this.facultyRepository = facultyRepository;
@@ -98,8 +98,7 @@ public class AuthServiceImpl implements AuthService {
         // 3️⃣ Generate JWT only after successful DB save
         return jwtUtil.generateToken(
                 savedUser.getEmail(),
-                savedUser.getRole().name()
-        );
+                savedUser.getRole().name());
     }
 
     @Override
@@ -115,12 +114,22 @@ public class AuthServiceImpl implements AuthService {
         return jwtUtil.generateToken(user.getEmail(), user.getRole().name());
     }
 
+    @Override
+    @Transactional
+    public void logout(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setLastLogout(java.time.LocalDateTime.now());
+        userRepository.save(user);
+    }
+
     private void validateEmailFormat(String email, UserRole role) {
 
         boolean isValid = switch (role) {
             case ADMIN -> Pattern.matches(ADMIN_EMAIL_REGEX, email);
             case STUDENT -> Pattern.matches(STUDENT_EMAIL_REGEX, email);
             case FACULTY -> Pattern.matches(FACULTY_EMAIL_REGEX, email);
+            default -> true; // For other roles like LIBRARIAN, handled in specific services or generic regex
         };
 
         if (!isValid) {

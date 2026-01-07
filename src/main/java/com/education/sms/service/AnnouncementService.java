@@ -1,21 +1,23 @@
 package com.education.sms.service;
 
 import com.education.sms.dto.AnnouncementRequest;
-import com.education.sms.entity.Announcement;
+import com.education.sms.dto.AnnouncementResponse;
 
 import java.util.List;
 
 public interface AnnouncementService {
 
-    Announcement createAnnouncement(AnnouncementRequest request);
+    AnnouncementResponse createAnnouncement(AnnouncementRequest request);
 
-    List<Announcement> getAllAnnouncements();
+    List<AnnouncementResponse> getAllAnnouncements();
 
-    List<Announcement> getAnnouncementsByClass(Long classId);
+    List<AnnouncementResponse> getAnnouncementsByClass(Long classId);
 
-    List<Announcement> getGeneralAnnouncements(); // For all students/faculty
+    List<AnnouncementResponse> getGeneralAnnouncements();
 
-    Announcement getAnnouncementById(Long announcementId);
+    List<AnnouncementResponse> getAnnouncementsForFeed(com.education.sms.entity.UserRole role);
+
+    AnnouncementResponse getAnnouncementById(Long announcementId);
 
     void deleteAnnouncement(Long announcementId);
 }

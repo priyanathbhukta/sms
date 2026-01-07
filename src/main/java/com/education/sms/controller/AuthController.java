@@ -64,4 +64,13 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(java.security.Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.badRequest().body("Not logged in");
+        }
+        authService.logout(principal.getName());
+        return ResponseEntity.ok("Successfully logged out");
+    }
+
 }

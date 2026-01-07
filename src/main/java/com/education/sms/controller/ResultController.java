@@ -2,7 +2,6 @@ package com.education.sms.controller;
 
 import com.education.sms.dto.ResultRequest;
 import com.education.sms.dto.ResultResponse;
-import com.education.sms.entity.Result;
 import com.education.sms.service.ResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +19,14 @@ public class ResultController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY')")
+    @io.swagger.v3.oas.annotations.Operation(hidden = true)
     public ResponseEntity<?> createOrUpdateResult(@RequestBody ResultRequest request) {
         if (request.examId() == null || request.studentId() == null || request.marksObtained() == null) {
             return ResponseEntity.badRequest().body("Missing required fields");
         }
 
         try {
-            Result result = resultService.createOrUpdateResult(request);
-            return ResponseEntity.ok(result);
+            return ResponseEntity.ok(resultService.createOrUpdateResult(request));
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (com.education.sms.exception.ResourceNotFoundException e) {
@@ -49,12 +48,12 @@ public class ResultController {
 
     @GetMapping("/exam/{examId}/student/{studentId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY', 'STUDENT')")
+    @io.swagger.v3.oas.annotations.Operation(hidden = true)
     public ResponseEntity<?> getResultByExamAndStudent(
             @PathVariable Long examId,
             @PathVariable Long studentId) {
         try {
-            ResultResponse result = resultService.getResultByExamAndStudent(examId, studentId);
-            return ResponseEntity.ok(result);
+            return ResponseEntity.ok(resultService.getResultByExamAndStudent(examId, studentId));
         } catch (com.education.sms.exception.ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }

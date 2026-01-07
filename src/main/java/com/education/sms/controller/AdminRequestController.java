@@ -1,7 +1,7 @@
 package com.education.sms.controller;
 
 import com.education.sms.dto.AdminRequestRequest;
-import com.education.sms.entity.AdminRequest;
+import com.education.sms.dto.AdminRequestResponse;
 import com.education.sms.service.AdminRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ public class AdminRequestController {
     private final AdminRequestService adminRequestService;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('STUDENT', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('STUDENT', 'FACULTY', 'LIBRARIAN')")
     public ResponseEntity<?> createAdminRequest(@RequestBody AdminRequestRequest request) {
         if (request.requesterUserId() == null || request.requestType() == null) {
             return ResponseEntity.badRequest().body("Missing required fields");
@@ -46,24 +46,24 @@ public class AdminRequestController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<AdminRequest>> getAllRequests() {
+    public ResponseEntity<List<AdminRequestResponse>> getAllRequests() {
         return ResponseEntity.ok(adminRequestService.getAllRequests());
     }
 
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'FACULTY')")
-    public ResponseEntity<List<AdminRequest>> getRequestsByUser(@PathVariable Long userId) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'FACULTY', 'LIBRARIAN')")
+    public ResponseEntity<List<AdminRequestResponse>> getRequestsByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(adminRequestService.getRequestsByUser(userId));
     }
 
     @GetMapping("/status/{status}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<AdminRequest>> getRequestsByStatus(@PathVariable String status) {
+    public ResponseEntity<List<AdminRequestResponse>> getRequestsByStatus(@PathVariable String status) {
         return ResponseEntity.ok(adminRequestService.getRequestsByStatus(status));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'FACULTY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'FACULTY', 'LIBRARIAN')")
     public ResponseEntity<?> getRequestById(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(adminRequestService.getRequestById(id));

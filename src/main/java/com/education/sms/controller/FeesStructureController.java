@@ -1,7 +1,7 @@
 package com.education.sms.controller;
 
 import com.education.sms.dto.FeesStructureRequest;
-import com.education.sms.entity.FeesStructure;
+import com.education.sms.dto.FeesStructureResponse;
 import com.education.sms.service.FeesStructureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,13 +35,13 @@ public class FeesStructureController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY')")
-    public ResponseEntity<List<FeesStructure>> getAllFeesStructures() {
+    public ResponseEntity<List<FeesStructureResponse>> getAllFeesStructures() {
         return ResponseEntity.ok(feesStructureService.getAllFeesStructures());
     }
 
     @GetMapping("/class/{classId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY', 'STUDENT')")
-    public ResponseEntity<List<FeesStructure>> getFeesStructuresByClass(@PathVariable Long classId) {
+    public ResponseEntity<List<FeesStructureResponse>> getFeesStructuresByClass(@PathVariable Long classId) {
         return ResponseEntity.ok(feesStructureService.getFeesStructuresByClass(classId));
     }
 

@@ -1,6 +1,7 @@
 package com.education.sms.service.impl;
 
 import com.education.sms.dto.EventParticipantRequest;
+import com.education.sms.dto.EventParticipantResponse;
 import com.education.sms.entity.Event;
 import com.education.sms.entity.EventParticipant;
 import com.education.sms.entity.User;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class EventParticipantServiceImpl implements EventParticipantService {
 
     @Override
     @Transactional
-    public EventParticipant registerParticipant(EventParticipantRequest request) {
+    public EventParticipantResponse registerParticipant(EventParticipantRequest request) {
         Event event = eventRepository.findById(request.eventId())
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + request.eventId()));
 
@@ -43,17 +45,21 @@ public class EventParticipantServiceImpl implements EventParticipantService {
                 .role(request.role())
                 .build();
 
-        return eventParticipantRepository.save(participant);
+        return toResponse(eventParticipantRepository.save(participant));
     }
 
     @Override
-    public List<EventParticipant> getParticipantsByEvent(Long eventId) {
-        return eventParticipantRepository.findByEventEventId(eventId);
+    public List<EventParticipantResponse> getParticipantsByEvent(Long eventId) {
+        return eventParticipantRepository.findByEventEventId(eventId).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<EventParticipant> getEventsByUser(Long userId) {
-        return eventParticipantRepository.findByUserId(userId);
+    public List<EventParticipantResponse> getEventsByUser(Long userId) {
+        return eventParticipantRepository.findByUserId(userId).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -63,5 +69,15 @@ public class EventParticipantServiceImpl implements EventParticipantService {
             throw new ResourceNotFoundException("Participant not found with id: " + participantId);
         }
         eventParticipantRepository.deleteById(participantId);
+    }
+
+    private EventParticipantResponse toResponse(EventParticipant entity) {
+        return new EventParticipantResponse(
+                entity.getEpId(),
+                entity.getEvent().getEventId(),
+                entity.getEvent().getTitle(),
+                entity.getUser().getId(),
+                entity.getUser().getEmail(),
+                entity.getRole());
     }
 }

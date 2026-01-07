@@ -7,5 +7,8 @@ import org.springframework.stereotype.Service;
 public interface AuthService {
     // abstract method to register and login
     String register(RegisterRequest registerRequest);
+
     String login(String email, String password);
+
+    void logout(String email);
 }

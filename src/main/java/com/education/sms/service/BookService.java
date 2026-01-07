@@ -1,25 +1,25 @@
 package com.education.sms.service;
 
 import com.education.sms.dto.BookRequest;
-import com.education.sms.entity.Book;
+import com.education.sms.dto.BookResponse;
 
 import java.util.List;
 
 public interface BookService {
 
-    Book addBook(BookRequest request);
+    BookResponse addBook(BookRequest request);
 
-    List<Book> getAllBooks();
+    List<BookResponse> getAllBooks();
 
-    List<Book> getAvailableBooks();
+    List<BookResponse> getAvailableBooks();
 
-    List<Book> searchBooksByTitle(String title);
+    List<BookResponse> searchBooksByTitle(String title);
 
-    List<Book> searchBooksByAuthor(String author);
+    List<BookResponse> searchBooksByAuthor(String author);
 
-    Book getBookById(Long bookId);
+    BookResponse getBookById(Long bookId);
 
-    Book getBookByIsbn(String isbn);
+    BookResponse getBookByIsbn(String isbn);
 
     void deleteBook(Long bookId);
 }

@@ -16,4 +16,6 @@ public interface AdminRequestRepository extends JpaRepository<AdminRequest, Long
     List<AdminRequest> findByRequestType(String requestType);
 
     List<AdminRequest> findByStatusOrderByCreatedAtDesc(String status);
+
+    long countByStatus(String status);
 }

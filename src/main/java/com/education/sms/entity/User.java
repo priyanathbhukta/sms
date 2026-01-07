@@ -40,20 +40,37 @@ public class User implements UserDetails {
     @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "last_logout")
+    private LocalDateTime lastLogout;
 
     // ... UserDetails methods ...
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
+
     @Override
-    public String getUsername() { return email; }
+    public String getUsername() {
+        return email;
+    }
+
     @Override
-    public boolean isAccountNonExpired() { return true; }
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
     @Override
-    public boolean isAccountNonLocked() { return true; }
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
     @Override
-    public boolean isCredentialsNonExpired() { return true; }
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
     @Override
-    public boolean isEnabled() { return Boolean.TRUE.equals(isActive); }
+    public boolean isEnabled() {
+        return Boolean.TRUE.equals(isActive);
+    }
 }

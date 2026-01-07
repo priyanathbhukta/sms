@@ -2,12 +2,11 @@ package com.education.sms.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,9 +21,10 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private long expirationTime;
 
-    // hashing using HMAC => HS256 technique
-    private Key getSignKey() {
-        return Keys.hmacShaKeyFor(io.jsonwebtoken.io.Decoders.BASE64.decode(secret));
+    // Fixed: Changed return type to SecretKey (standard for 0.12.x)
+    private SecretKey getSignKey() {
+        byte[] keyBytes = io.jsonwebtoken.io.Decoders.BASE64.decode(secret);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String generateToken(String username, String role) {
@@ -34,12 +34,13 @@ public class JwtUtil {
     }
 
     public String createToken(Map<String, Object> claims, String subject) {
+        // Updated for JJWT 0.12.6 syntax
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .claims(claims) // Changed from setClaims
+                .subject(subject) // Changed from setSubject
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(getSignKey()) // Algorithm HS256 is now automatically determined
                 .compact();
     }
 
@@ -53,14 +54,14 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSignKey())
+        return Jwts.parser()
+                .verifyWith(getSignKey()) // Fixed: changed from getSigningKey to getSignKey
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
-    public boolean validateToken(String token, String username) { // Simple validation
+    public boolean validateToken(String token, String username) {
         final String extractedUser = extractUsername(token);
         return (extractedUser.equals(username) && !isTokenExpired(token));
     }

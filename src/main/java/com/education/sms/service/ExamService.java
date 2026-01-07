@@ -1,19 +1,19 @@
 package com.education.sms.service;
 
 import com.education.sms.dto.ExamRequest;
-import com.education.sms.entity.Exam;
+import com.education.sms.dto.ExamResponse;
 
 import java.util.List;
 
 public interface ExamService {
 
-    Exam createExam(ExamRequest request);
+    ExamResponse createExam(ExamRequest request);
 
-    List<Exam> getAllExams();
+    List<ExamResponse> getAllExams();
 
-    List<Exam> getExamsByCourse(Long courseId);
+    List<ExamResponse> getExamsByCourse(Long courseId);
 
-    List<Exam> getExamsByClass(Long classId);
+    List<ExamResponse> getExamsByClass(Long classId);
 
-    Exam getExamById(Long examId);
+    ExamResponse getExamById(Long examId);
 }

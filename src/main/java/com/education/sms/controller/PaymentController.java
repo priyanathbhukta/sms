@@ -1,7 +1,7 @@
 package com.education.sms.controller;
 
 import com.education.sms.dto.PaymentRequest;
-import com.education.sms.entity.Payment;
+import com.education.sms.dto.PaymentResponse;
 import com.education.sms.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +19,7 @@ public class PaymentController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT')")
+    @io.swagger.v3.oas.annotations.Operation(hidden = true)
     public ResponseEntity<?> createPayment(@RequestBody PaymentRequest request) {
         if (request.studentId() == null || request.amountPaid() == null) {
             return ResponseEntity.badRequest().body("Missing required fields");
@@ -33,6 +34,7 @@ public class PaymentController {
 
     @PutMapping("/{paymentId}/status")
     @PreAuthorize("hasRole('ADMIN')")
+    @io.swagger.v3.oas.annotations.Operation(hidden = true)
     public ResponseEntity<?> updatePaymentStatus(
             @PathVariable Long paymentId,
             @RequestParam String status) {
@@ -45,18 +47,19 @@ public class PaymentController {
 
     @GetMapping("/student/{studentId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT')")
-    public ResponseEntity<List<Payment>> getPaymentsByStudent(@PathVariable Long studentId) {
+    public ResponseEntity<List<PaymentResponse>> getPaymentsByStudent(@PathVariable Long studentId) {
         return ResponseEntity.ok(paymentService.getPaymentsByStudent(studentId));
     }
 
     @GetMapping("/status/{status}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Payment>> getPaymentsByStatus(@PathVariable String status) {
+    public ResponseEntity<List<PaymentResponse>> getPaymentsByStatus(@PathVariable String status) {
         return ResponseEntity.ok(paymentService.getPaymentsByStatus(status));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT')")
+    @io.swagger.v3.oas.annotations.Operation(hidden = true)
     public ResponseEntity<?> getPaymentById(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(paymentService.getPaymentById(id));
@@ -67,6 +70,7 @@ public class PaymentController {
 
     @GetMapping("/razorpay/{razorpayPaymentId}")
     @PreAuthorize("hasRole('ADMIN')")
+    @io.swagger.v3.oas.annotations.Operation(hidden = true)
     public ResponseEntity<?> getPaymentByRazorpayId(@PathVariable String razorpayPaymentId) {
         try {
             return ResponseEntity.ok(paymentService.getPaymentByRazorpayId(razorpayPaymentId));

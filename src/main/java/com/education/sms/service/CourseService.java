@@ -1,21 +1,21 @@
 package com.education.sms.service;
 
 import com.education.sms.dto.CourseRequest;
-import com.education.sms.entity.Course;
+import com.education.sms.dto.CourseResponse;
 
 import java.util.List;
 
 public interface CourseService {
 
-    Course createCourse(CourseRequest request);
+    CourseResponse createCourse(CourseRequest request);
 
-    List<Course> getAllCourses();
+    List<CourseResponse> getAllCourses();
 
-    List<Course> getCoursesByClass(Long classId);
+    List<CourseResponse> getCoursesByClass(Long classId);
 
-    List<Course> getCoursesByFaculty(Long facultyId);
+    List<CourseResponse> getCoursesByFaculty(Long facultyId);
 
-    Course getCourseById(Long courseId);
+    CourseResponse getCourseById(Long courseId);
 
     void assignFacultyToCourse(Long courseId, Long facultyId);
 }

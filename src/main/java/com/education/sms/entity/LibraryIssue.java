@@ -37,6 +37,9 @@ public class LibraryIssue {
     @Column(name = "return_date")
     private LocalDate returnDate;
 
+    @Column(name = "due_date")
+    private LocalDate dueDate;
+
     @Column(name = "fine_amount", precision = 7, scale = 2)
     @Builder.Default
     private BigDecimal fineAmount = BigDecimal.ZERO;

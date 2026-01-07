@@ -52,6 +52,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 // Validate the token
                 if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
+
+                    // Check if token is invalidated by logout
+                    if (userDetails instanceof com.education.sms.entity.User) {
+                        com.education.sms.entity.User user = (com.education.sms.entity.User) userDetails;
+                        if (user.getLastLogout() != null) {
+                            java.util.Date issuedAt = jwtUtil.extractClaim(jwt, io.jsonwebtoken.Claims::getIssuedAt);
+                            if (issuedAt != null && issuedAt.before(java.sql.Timestamp.valueOf(user.getLastLogout()))) {
+                                // Token is invalid
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                return;
+                            }
+                        }
+                    }
+
                     // Create authentication token
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,

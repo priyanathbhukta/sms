@@ -1,6 +1,7 @@
 package com.education.sms.service.impl;
 
 import com.education.sms.dto.BookRequest;
+import com.education.sms.dto.BookResponse;
 import com.education.sms.entity.Book;
 import com.education.sms.exception.ResourceNotFoundException;
 import com.education.sms.repository.BookRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +21,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public Book addBook(BookRequest request) {
+    public BookResponse addBook(BookRequest request) {
         // Check for duplicate ISBN
         if (bookRepository.findByIsbn(request.isbn()).isPresent()) {
             throw new IllegalArgumentException("Book with ISBN " + request.isbn() + " already exists");
@@ -33,39 +35,49 @@ public class BookServiceImpl implements BookService {
                 .availableCopies(request.totalCopies()) // Initially all copies are available
                 .build();
 
-        return bookRepository.save(book);
+        return toResponse(bookRepository.save(book));
     }
 
     @Override
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public List<BookResponse> getAllBooks() {
+        return bookRepository.findAll().stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Book> getAvailableBooks() {
-        return bookRepository.findByAvailableCopiesGreaterThan(0);
+    public List<BookResponse> getAvailableBooks() {
+        return bookRepository.findByAvailableCopiesGreaterThan(0).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Book> searchBooksByTitle(String title) {
-        return bookRepository.findByTitleContainingIgnoreCase(title);
+    public List<BookResponse> searchBooksByTitle(String title) {
+        return bookRepository.findByTitleContainingIgnoreCase(title).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Book> searchBooksByAuthor(String author) {
-        return bookRepository.findByAuthorContainingIgnoreCase(author);
+    public List<BookResponse> searchBooksByAuthor(String author) {
+        return bookRepository.findByAuthorContainingIgnoreCase(author).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Book getBookById(Long bookId) {
-        return bookRepository.findById(bookId)
+    public BookResponse getBookById(Long bookId) {
+        Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
+        return toResponse(book);
     }
 
     @Override
-    public Book getBookByIsbn(String isbn) {
-        return bookRepository.findByIsbn(isbn)
+    public BookResponse getBookByIsbn(String isbn) {
+        Book book = bookRepository.findByIsbn(isbn)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with ISBN: " + isbn));
+        return toResponse(book);
     }
 
     @Override
@@ -75,5 +87,15 @@ public class BookServiceImpl implements BookService {
             throw new ResourceNotFoundException("Book not found with id: " + bookId);
         }
         bookRepository.deleteById(bookId);
+    }
+
+    private BookResponse toResponse(Book entity) {
+        return new BookResponse(
+                entity.getBookId(),
+                entity.getTitle(),
+                entity.getAuthor(),
+                entity.getIsbn(),
+                entity.getTotalCopies(),
+                entity.getAvailableCopies());
     }
 }

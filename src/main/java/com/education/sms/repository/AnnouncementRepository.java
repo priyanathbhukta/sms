@@ -1,6 +1,7 @@
 package com.education.sms.repository;
 
 import com.education.sms.entity.Announcement;
+import com.education.sms.entity.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,5 +16,8 @@ public interface AnnouncementRepository extends JpaRepository<Announcement, Long
 
     List<Announcement> findAllByOrderByCreatedAtDesc();
 
-    List<Announcement> findByTargetClassIsNullOrderByCreatedAtDesc(); // General announcements (for all)
+    List<Announcement> findByTargetClassIsNullOrderByCreatedAtDesc();
+
+    List<Announcement> findByTargetRoleOrderByCreatedAtDesc(UserRole role);
+    // General announcements (for all)
 }

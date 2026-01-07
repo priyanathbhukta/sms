@@ -1,7 +1,7 @@
 package com.education.sms.controller;
 
 import com.education.sms.dto.LibraryIssueRequest;
-import com.education.sms.entity.LibraryIssue;
+import com.education.sms.dto.LibraryIssueResponse;
 import com.education.sms.service.LibraryIssueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,8 @@ public class LibraryIssueController {
     private final LibraryIssueService libraryIssueService;
 
     @PostMapping("/issue")
-    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY')")
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    @io.swagger.v3.oas.annotations.Operation(hidden = true)
     public ResponseEntity<?> issueBook(@RequestBody LibraryIssueRequest request) {
         if (request.bookId() == null || request.userId() == null) {
             return ResponseEntity.badRequest().body("Missing required fields");
@@ -35,7 +36,8 @@ public class LibraryIssueController {
     }
 
     @PutMapping("/{issueId}/return")
-    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY')")
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    @io.swagger.v3.oas.annotations.Operation(hidden = true)
     public ResponseEntity<?> returnBook(
             @PathVariable Long issueId,
             @RequestParam(required = false, defaultValue = "0") BigDecimal fineAmount) {
@@ -49,25 +51,26 @@ public class LibraryIssueController {
     }
 
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY', 'STUDENT')")
-    public ResponseEntity<List<LibraryIssue>> getIssuesByUser(@PathVariable Long userId) {
+    @PreAuthorize("hasAnyRole('LIBRARIAN', 'STUDENT')")
+    public ResponseEntity<List<LibraryIssueResponse>> getIssuesByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(libraryIssueService.getIssuesByUser(userId));
     }
 
     @GetMapping("/book/{bookId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY')")
-    public ResponseEntity<List<LibraryIssue>> getIssuesByBook(@PathVariable Long bookId) {
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public ResponseEntity<List<LibraryIssueResponse>> getIssuesByBook(@PathVariable Long bookId) {
         return ResponseEntity.ok(libraryIssueService.getIssuesByBook(bookId));
     }
 
     @GetMapping("/overdue")
-    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY')")
-    public ResponseEntity<List<LibraryIssue>> getOverdueIssues() {
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public ResponseEntity<List<LibraryIssueResponse>> getOverdueIssues() {
         return ResponseEntity.ok(libraryIssueService.getOverdueIssues());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY', 'STUDENT')")
+    @PreAuthorize("hasAnyRole('LIBRARIAN', 'STUDENT')")
+    @io.swagger.v3.oas.annotations.Operation(hidden = true)
     public ResponseEntity<?> getIssueById(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(libraryIssueService.getIssueById(id));

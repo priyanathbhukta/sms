@@ -1,7 +1,7 @@
 package com.education.sms.controller;
 
 import com.education.sms.dto.AnnouncementRequest;
-import com.education.sms.entity.Announcement;
+import com.education.sms.dto.AnnouncementResponse;
 import com.education.sms.service.AnnouncementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,21 +32,27 @@ public class AnnouncementController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY', 'STUDENT')")
-    public ResponseEntity<List<Announcement>> getAllAnnouncements() {
+    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY', 'STUDENT', 'LIBRARIAN')")
+    public ResponseEntity<List<AnnouncementResponse>> getAllAnnouncements() {
         return ResponseEntity.ok(announcementService.getAllAnnouncements());
     }
 
     @GetMapping("/class/{classId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY', 'STUDENT')")
-    public ResponseEntity<List<Announcement>> getAnnouncementsByClass(@PathVariable Long classId) {
+    public ResponseEntity<List<AnnouncementResponse>> getAnnouncementsByClass(@PathVariable Long classId) {
         return ResponseEntity.ok(announcementService.getAnnouncementsByClass(classId));
     }
 
     @GetMapping("/general")
-    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY', 'STUDENT')")
-    public ResponseEntity<List<Announcement>> getGeneralAnnouncements() {
-        return ResponseEntity.ok(announcementService.getGeneralAnnouncements());
+    @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY', 'STUDENT', 'LIBRARIAN')")
+    public ResponseEntity<List<AnnouncementResponse>> getGeneralAnnouncements() {
+        // Get current user's role from SecurityContext
+        org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication();
+        String roleName = auth.getAuthorities().stream().findFirst().get().getAuthority().replace("ROLE_", "");
+        com.education.sms.entity.UserRole role = com.education.sms.entity.UserRole.valueOf(roleName);
+
+        return ResponseEntity.ok(announcementService.getAnnouncementsForFeed(role));
     }
 
     @GetMapping("/{id}")

@@ -1,7 +1,7 @@
 package com.education.sms.controller;
 
 import com.education.sms.dto.EventParticipantRequest;
-import com.education.sms.entity.EventParticipant;
+import com.education.sms.dto.EventParticipantResponse;
 import com.education.sms.service.EventParticipantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,13 +35,13 @@ public class EventParticipantController {
 
     @GetMapping("/event/{eventId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY')")
-    public ResponseEntity<List<EventParticipant>> getParticipantsByEvent(@PathVariable Long eventId) {
+    public ResponseEntity<List<EventParticipantResponse>> getParticipantsByEvent(@PathVariable Long eventId) {
         return ResponseEntity.ok(eventParticipantService.getParticipantsByEvent(eventId));
     }
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'FACULTY', 'STUDENT')")
-    public ResponseEntity<List<EventParticipant>> getEventsByUser(@PathVariable Long userId) {
+    public ResponseEntity<List<EventParticipantResponse>> getEventsByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(eventParticipantService.getEventsByUser(userId));
     }
 
