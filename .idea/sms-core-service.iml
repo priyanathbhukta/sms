@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
-  <component name="AdditionalModuleElements">
-    <content url="file://$MODULE_DIR$" />
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_21" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/backend/target/classes" />
+    <output-test url="file://$MODULE_DIR$/backend/target/test-classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/backend">
+      <sourceFolder url="file://$MODULE_DIR$/backend/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/backend/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/backend/src/test/java" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

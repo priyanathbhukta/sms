@@ -32,37 +32,6 @@ The system enforces strict email formats. Use these patterns:
 
 ## 1. Authentication & Onboarding
 
-### Register User (Public)
-**Method:** `POST`
-**URL:** `{{baseUrl}}/api/auth/register`
-**Body (JSON):**
-
-**Student Registration**
-```json
-{
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "john.doe.2024@sms.edu.in",
-  "password": "password123",
-  "role": "STUDENT",
-  "additionalId": "2024",
-  "department": null
-}
-```
-
-**Faculty Registration**
-```json
-{
-  "firstName": "Jane",
-  "lastName": "Smith",
-  "email": "jane.smith.101@sms.edu.in",
-  "password": "password123",
-  "role": "FACULTY",
-  "additionalId": "101",
-  "department": "Science"
-}
-```
-
 ### Login (Public)
 **Method:** `POST`
 **URL:** `{{baseUrl}}/api/auth/login`
@@ -73,20 +42,124 @@ The system enforces strict email formats. Use these patterns:
   "password": "password123"
 }
 ```
+**Response includes:** `token`, `role`, `email`, `mustChangePassword`
 
 ### Logout
 **Method:** `POST`
 **URL:** `{{baseUrl}}/api/auth/logout`
 **Body:** None
 
+### Register User (DISABLED - Returns 403)
+**Method:** `POST`
+**URL:** `{{baseUrl}}/api/auth/register`
+**Note:** Self-registration is disabled. Contact admin to create accounts.
+
+---
+
+## 1.1 Password Management
+
+### Change Password (Authenticated)
+**Method:** `POST`
+**URL:** `{{baseUrl}}/api/password/change`
+**Note:** Used for first-login password change or voluntary password update.
+**Body (JSON):**
+```json
+{
+  "currentPassword": "temporaryPassword123!",
+  "newPassword": "myNewSecurePass123!",
+  "confirmPassword": "myNewSecurePass123!"
+}
+```
+
+### Request Password Reset (Public)
+**Method:** `POST`
+**URL:** `{{baseUrl}}/api/password/reset/request`
+**Body (JSON):**
+```json
+{
+  "email": "john@example.com"
+}
+```
+**Note:** Can use personal email or system email. Always returns success to prevent enumeration.
+
+### Confirm Password Reset (Public)
+**Method:** `POST`
+**URL:** `{{baseUrl}}/api/password/reset/confirm`
+**Body (JSON):**
+```json
+{
+  "token": "uuid-reset-token-from-email",
+  "newPassword": "myNewSecurePass123!",
+  "confirmPassword": "myNewSecurePass123!"
+}
+```
+
+### Check Must Change Password (Authenticated)
+**Method:** `GET`
+**URL:** `{{baseUrl}}/api/password/must-change`
+
+---
+
+## 1.2 Admin User Registration (Admin Only)
+*Requires ADMIN Role Token*
+
+### Register Student
+**Method:** `POST`
+**URL:** `{{baseUrl}}/api/admin/register/student`
+**Note:** Password is set to `password123`. User must change on first login.
+**Body (JSON):**
+```json
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "personalEmail": "john.doe.personal@gmail.com",
+  "role": "STUDENT",
+  "additionalId": "2024",
+  "phone": "1234567890",
+  "classId": 1
+}
+```
+**Note:** `classId` is optional. If provided, the student will be assigned to that class.
+
+### Register Faculty
+**Method:** `POST`
+**URL:** `{{baseUrl}}/api/admin/register/faculty`
+**Body (JSON):**
+```json
+{
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "personalEmail": "jane.smith@gmail.com",
+  "role": "FACULTY",
+  "additionalId": "101",
+  "department": "Science",
+  "phone": "9876543210"
+}
+```
+
+### Register Librarian
+**Method:** `POST`
+**URL:** `{{baseUrl}}/api/admin/register/librarian`
+**Body (JSON):**
+```json
+{
+  "firstName": "Sarah",
+  "lastName": "Connor",
+  "personalEmail": "sarah.connor@gmail.com",
+  "role": "LIBRARIAN",
+  "additionalId": "501",
+  "phone": "5551234567"
+}
+```
+
 ---
 
 ## 2. Admin: System Setup & User Management
 *Requires ADMIN Role Token*
 
-### Librarian Management
+### Librarian Management (Legacy)
 
-#### Create Librarian
+#### Create Librarian (Legacy - Use /api/admin/register/librarian instead)
 **Method:** `POST`
 **URL:** `{{baseUrl}}/api/admin/librarians/create`
 **Body (JSON):**

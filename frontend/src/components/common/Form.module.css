@@ -1,0 +1,102 @@
+.formGroup {
+    margin-bottom: var(--space-4);
+}
+
+.label {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.input {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.input::placeholder {
+    color: var(--text-muted);
+}
+
+.input.error {
+    border-color: var(--error-500);
+}
+
+.input.error:focus {
+    box-shadow: 0 0 0 3px var(--error-50);
+}
+
+.select {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.select:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.textarea {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    resize: vertical;
+    min-height: 100px;
+    transition: all var(--transition-fast);
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.errorMessage {
+    margin-top: var(--space-1);
+    font-size: var(--text-xs);
+    color: var(--error-600);
+}
+
+.helpText {
+    margin-top: var(--space-1);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+/* Row layout */
+.row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+}
+
+@media (max-width: 640px) {
+    .row {
+        grid-template-columns: 1fr;
+    }
+}
